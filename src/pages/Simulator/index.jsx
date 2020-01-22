@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Game from '../../Game';
+import Game from '../../components/Game';
 import { requesterService } from '../../services';
 
 const Simulator = () => {

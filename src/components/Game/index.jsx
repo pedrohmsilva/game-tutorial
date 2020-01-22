@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import Board from '../components/Board';
+import Board from '../Board';
 import styles from './styles';
 
-import { requesterService } from '../services';
+import { requesterService } from '../../services';
 
 const calculateWinner = async (squares) => {
   try {

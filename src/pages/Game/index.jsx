@@ -1,5 +1,8 @@
 import React from 'react';
+import Game from '../../components/Game';
 
-const Game = () => <div>Game</div>;
+const GamePage = () => (
+  <Game />
+);
 
-export default Game;
+export default GamePage;
