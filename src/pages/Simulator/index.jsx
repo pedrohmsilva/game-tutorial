@@ -3,18 +3,20 @@ import Game from '../../components/Game';
 import { requesterService } from '../../services';
 
 const Simulator = () => {
-  const [simulation, setSimulation] = useState(null);
+  const [simulation, setSimulation] = useState();
 
   const getSimulation = async () => {
     try {
-      return await requesterService.post('/');
+      const response = await requesterService.get('/');
+      setSimulation(response);
+      return response;
     } catch (err) {
       return err;
     }
   };
 
   useEffect(() => {
-    setSimulation(getSimulation());
+    getSimulation();
   }, []);
 
   return (

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import Board from '../Board';
 import styles from './styles';
 
@@ -14,15 +15,31 @@ const calculateWinner = async (squares) => {
   }
 };
 
-const Game = () => {
-  const [history, setHistory] = useState([{
-    squares: Array(9).fill(null),
-  }]);
+const Game = (props) => {
+  const { historyProps } = props;
+
+  const [history, setHistory] = useState(historyProps);
   const [xIsNext, setXIsNext] = useState(true);
   const [stepNumber, setStepNumber] = useState(0);
   const [winner, setWinner] = useState(null);
+  const [current, setCurrent] = useState(historyProps[0]);
 
-  const current = history[stepNumber];
+  const defineWinner = async (squares) => {
+    setWinner(await calculateWinner(squares));
+  };
+
+  useEffect(() => {
+    setHistory(historyProps);
+    setCurrent(historyProps[historyProps.length - 1]);
+    defineWinner(historyProps[historyProps.length - 1].squares);
+    setStepNumber(historyProps.length);
+  }, [historyProps]);
+
+  useEffect(() => {
+    setStepNumber(history.length);
+    setXIsNext(!xIsNext);
+    setCurrent(history[stepNumber]);
+  }, [history]);
 
   const handleClick = async (i) => {
     const subHistory = history.slice(0, stepNumber + 1);
@@ -34,19 +51,20 @@ const Game = () => {
     }
 
     squares[i] = xIsNext ? 'X' : 'O';
-    setHistory(subHistory.concat([{
-      squares,
-    }]));
-    setStepNumber(subHistory.length);
-    setXIsNext(!xIsNext);
 
-    setWinner(await calculateWinner(squares));
+    const newHistory = subHistory.concat([{ squares }]);
+    setHistory(newHistory);
+    // setStepNumber(history.length);
+    // setXIsNext(!xIsNext);
+    defineWinner(squares);
+    // setCurrent(history[stepNumber]);
   };
 
   const jumpTo = async (step) => {
     setStepNumber(step);
     setXIsNext((step % 2) === 0);
-    setWinner(await calculateWinner(history[step].squares));
+    setCurrent(history[step]);
+    defineWinner(history[step].squares);
   };
 
   const moves = history.map((step, move) => {
@@ -80,6 +98,14 @@ const Game = () => {
       </div>
     </div>
   );
+};
+
+Game.propTypes = {
+  historyProps: PropTypes.arrayOf(PropTypes.object),
+};
+
+Game.defaultProps = {
+  historyProps: [{ squares: Array(9).fill(null) }],
 };
 
 export default Game;
