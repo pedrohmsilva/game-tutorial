@@ -32,16 +32,19 @@ const Game = (props) => {
     setHistory(historyProps);
     setCurrent(historyProps[historyProps.length - 1]);
     defineWinner(historyProps[historyProps.length - 1].squares);
-    setStepNumber(historyProps.length);
+    setStepNumber(historyProps.length - 1);
   }, [historyProps]);
 
   useEffect(() => {
-    setStepNumber(history.length);
-    setXIsNext(!xIsNext);
-    setCurrent(history[stepNumber]);
+    setStepNumber(history.length - 1);
+    setCurrent(history[history.length - 1]);
   }, [history]);
 
   const handleClick = async (i) => {
+    if (historyProps.length > 1) {
+      return;
+    }
+
     const subHistory = history.slice(0, stepNumber + 1);
     const subCurrent = subHistory[subHistory.length - 1];
     const squares = subCurrent.squares.slice();
@@ -54,10 +57,8 @@ const Game = (props) => {
 
     const newHistory = subHistory.concat([{ squares }]);
     setHistory(newHistory);
-    // setStepNumber(history.length);
-    // setXIsNext(!xIsNext);
+    setXIsNext((x) => !x);
     defineWinner(squares);
-    // setCurrent(history[stepNumber]);
   };
 
   const jumpTo = async (step) => {
