@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect, useMemo } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import Board from '../Board';
 import styles from './styles';
-
 import { requesterService } from '../../services';
+import newGame from '../../store/ducks/newGame';
 
 const calculateWinner = async (squares) => {
   try {
@@ -15,33 +15,26 @@ const calculateWinner = async (squares) => {
   }
 };
 
-const Game = (props) => {
-  const { historyProps } = props;
-
-  const [history, setHistory] = useState(historyProps);
-  const [xIsNext, setXIsNext] = useState(true);
-  const [stepNumber, setStepNumber] = useState(0);
-  const [winner, setWinner] = useState(null);
-  const [current, setCurrent] = useState(historyProps[0]);
+const Game = () => {
+  const history = useSelector(state => state.newGame.history);
+  const nextPlayer = useSelector(state => state.newGame.nextPlayer);
+  const stepNumber = useSelector(state => state.newGame.stepNumber);
+  const winner = useSelector(state => state.newGame.winner);
+  const current = useSelector(state => state.newGame.current);
+  const simulated = useSelector(state => state.newGame.simulated);
+  const dispatch = useDispatch();
 
   const defineWinner = async (squares) => {
     setWinner(await calculateWinner(squares));
   };
 
-  useEffect(() => {
-    setHistory(historyProps);
-    setCurrent(historyProps[historyProps.length - 1]);
-    defineWinner(historyProps[historyProps.length - 1].squares);
-    setStepNumber(historyProps.length - 1);
-  }, [historyProps]);
-
-  useEffect(() => {
-    setStepNumber(history.length - 1);
-    setCurrent(history[history.length - 1]);
+  useMemo(() => {
+    dispatch(newGame.setStepNumber(history.length - 1));
+    dispatch(newGame.setCurrent(history[history.length - 1]));
   }, [history]);
 
   const handleClick = async (i) => {
-    if (historyProps.length > 1) {
+    if (history.length > 1) {
       return;
     }
 
@@ -99,14 +92,6 @@ const Game = (props) => {
       </div>
     </div>
   );
-};
-
-Game.propTypes = {
-  historyProps: PropTypes.arrayOf(PropTypes.object),
-};
-
-Game.defaultProps = {
-  historyProps: [{ squares: Array(9).fill(null) }],
 };
 
 export default Game;
