@@ -4,7 +4,7 @@ import { Game, Simulator } from '../../pages';
 
 const Routers = () => (
   <Switch>
-    <Route path="/play">
+    <Route path="/game">
       <Game />
     </Route>
     <Route path="/simulate">
